@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+    laravel:
+        build:
+            context: .
+            dockerfile: ./.docker/dev/Dockerfile
+        ports:
+            - "8002:80"
+        volumes:
+            - .:/var/www/html
+        environment:
+            - APP_ENV=local
+            - DB_CONNECTION=mysql
+            - DB_HOST=mysql
+            - DB_PORT=3306
+            - DB_DATABASE=laravel
+            - DB_USERNAME=root
+            - DB_PASSWORD=root
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - STORAGE_DRIVER=s3
+            - AWS_ACCESS_KEY_ID=your-minio-access-key
+            - AWS_SECRET_ACCESS_KEY=your-minio-secret-key
+            - AWS_DEFAULT_REGION=your-region
+            - AWS_BUCKET=your-bucket-name
+            - AWS_ENDPOINT=http://minio:9000
+        depends_on:
+            - mysql
+            - redis
+
+    mysql:
+        image: mysql:5.7
+        ports:
+            - "3309:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: laravel
+
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+
+#    s3:
+#        image: minio/minio
+#        ports:
+#            - "9100:9000"
+#        environment:
+#            MINIO_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+#            MINIO_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+#        volumes:
+#            - ./data:/data
+#            - ./config:/root/.minio
